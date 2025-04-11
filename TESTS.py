@@ -46,10 +46,11 @@ def add_anchor(anchor_id, anchor_name, latitude, longitude, cookies):
         print(f"Failed to add anchor {anchor_id}:", response.json())
 
 # Function to add a tag from TCP
-def add_tag(tag_name, latitude, longitude, user_id, cookies):
+def add_tag(tag_id, tag_name, latitude, longitude, user_id, cookies):
     response = requests.post(
         f"{BASE_URL}/add_tag_tcp",
         json={
+            "tag_id": tag_id,
             "tag_name": tag_name,
             "latitude": latitude,
             "longitude": longitude,
@@ -84,5 +85,5 @@ if __name__ == "__main__":
 
         # Register two tags after adding the anchors
         user_id = 1  # Assuming you have a valid user_id; replace with actual user_id if needed.
-        add_tag("Tag 1", lat1 + METERS_TO_DEGREES_LAT, lon1, user_id, cookies)  # Tag 1 at +10m latitude
-        add_tag("Tag 2", lat1, lon1 + METERS_TO_DEGREES_LON, user_id, cookies)  # Tag 2 at +10m longitude
+        add_tag("CD", "Tag 1", lat1 + METERS_TO_DEGREES_LAT, lon1, user_id, cookies)  # Tag 1 at +10m latitude
+        add_tag("GH", "Tag 2", lat1, lon1 + METERS_TO_DEGREES_LON, user_id, cookies)  # Tag 2 at +10m longitude

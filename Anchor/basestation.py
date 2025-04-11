@@ -128,6 +128,7 @@ try:
     print(f"Tags to ping: {tags_list}")
     
     # ----------------------------------------------------------- ACQUIRING TAG LOCATIONS ---------------------------------------------------------------------------------
+    
     # Dictionary to store tag measurements (key: tag_id, value: {anchor_id: distance})
     tag_measurements = {tag['id']: {} for tag in tags_list}
 

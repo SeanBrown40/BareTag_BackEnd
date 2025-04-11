@@ -301,11 +301,12 @@ def add_tag_location():
 
     # Get data from the request
     data = request.get_json()
+    tag_id = data.get('tag_id')
     tag_name = data.get('tag_name') 
     x_offset = data.get('x_offset')  # Relative position in meters on the X-axis
     y_offset = data.get('y_offset')  # Relative position in meters on the Y-axis
 
-    if not tag_name or x_offset is None or y_offset is None:
+    if not tag_id or tag_name or x_offset is None or y_offset is None:
         return jsonify({'error': 'Missing required data (tag_id, anchor_id, x_offset, y_offset)'}), 400
 
     try:
@@ -320,9 +321,9 @@ def add_tag_location():
         if not existing_tag:
             # If the tag doesn't exist, insert it into the tags table
             c.execute("""
-                INSERT INTO tags (tag_name, user_id, latitude, longitude)
+                INSERT INTO tags (tag_id, tag_name, user_id, latitude, longitude)
                 VALUES (?, ?, ?, ?)
-            """, (tag_name, user_id, x_offset, y_offset))  # Default location set to 0.0, 0.0
+            """, (tag_id, tag_name, user_id, x_offset, y_offset))  # Default location set to 0.0, 0.0
 
         # Fetch the anchor's GPS coordinates
         #c.execute("SELECT latitude, longitude FROM anchors WHERE id=?", (anchor_id,))
@@ -357,6 +358,7 @@ def add_tag_from_tcp():
     if not data:
         return jsonify({"message": "No data received or data is not valid JSON."}), 400
 
+    tag_id = data.get('tag_id')
     tag_name = data.get('tag_name')
     tag_latitude = data.get('latitude')  # Latitude of the tag
     tag_longitude = data.get('longitude')  # Longitude of the tag
@@ -374,17 +376,17 @@ def add_tag_from_tcp():
         # Tag exists, update latitude and longitude
         cur.execute("""
             UPDATE tags
-            SET user_id = ?, latitude = ?, longitude = ?
+            SET tag_id = ?, user_id = ?, latitude = ?, longitude = ?
             WHERE tag_name = ?
-        """, (user_id, tag_latitude, tag_longitude, tag_name))
+        """, (tag_id, user_id, tag_latitude, tag_longitude, tag_name))
         message = "Tag updated successfully!"
 
     else:
         # Tag doesn't exist, add a new tag
         cur.execute("""
-            INSERT INTO tags (user_id, tag_name, latitude, longitude)
+            INSERT INTO tags (tag_id, user_id, tag_name, latitude, longitude)
             VALUES (?, ?, ?, ?)
-        """, (user_id, tag_name, tag_latitude, tag_longitude))
+        """, (tag_id, user_id, tag_name, tag_latitude, tag_longitude))
         con.commit()
         message = "New tag added successfully!"
 
